@@ -14,23 +14,8 @@ provider "aws" {
 
 resource "aws_s3_bucket" "static_site_bucket" {
   bucket = var.bucket_name
-
 }
 
-data "aws_iam_policy_document" "allow_public_website_access" {
-  statement {
-    actions = [
-      "s3:GetObject"
-    ]
-    principals {
-      identifiers = ["*"]
-      type        = "*"
-    }
-    resources = [
-      "arn:aws:s3:::${var.bucket_name}/*"
-    ]
-  }
-}
 
 resource "aws_s3_bucket_ownership_controls" "static_site_bucket_ownership_controls" {
   bucket = aws_s3_bucket.static_site_bucket.id
@@ -54,17 +39,6 @@ resource "aws_s3_bucket_policy" "static_site_bucket_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Principal = "*"
-        Action = [
-          "s3:*",
-        ]
-        Effect = "Allow"
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}",
-          "arn:aws:s3:::${var.bucket_name}/*"
-        ]
-      },
       {
         Sid       = "PublicReadGetObject"
         Principal = "*"

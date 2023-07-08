@@ -12,7 +12,7 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_s3_bucket" "s3Bucket" {
+resource "aws_s3_bucket" "static_site_bucket" {
   bucket = var.bucket_name
 
 }
@@ -32,15 +32,15 @@ data "aws_iam_policy_document" "allow_public_website_access" {
   }
 }
 
-resource "aws_s3_bucket_ownership_controls" "s3BucketOwnershipControls" {
-  bucket = aws_s3_bucket.s3Bucket.id
+resource "aws_s3_bucket_ownership_controls" "static_site_bucket_ownership_controls" {
+  bucket = aws_s3_bucket.static_site_bucket.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "s3BucketPublicAccess" {
-  bucket = aws_s3_bucket.s3Bucket.id
+resource "aws_s3_bucket_public_access_block" "static_site_bucket_public_access" {
+  bucket = aws_s3_bucket.static_site_bucket.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -48,7 +48,7 @@ resource "aws_s3_bucket_public_access_block" "s3BucketPublicAccess" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "s3Bucketpolicy" {
+resource "aws_s3_bucket_policy" "static_site_bucket_policy" {
   bucket = var.bucket_name
 
   policy = jsonencode({
@@ -80,10 +80,10 @@ resource "aws_s3_bucket_policy" "s3Bucketpolicy" {
     ]
   })
 
-  depends_on = [aws_s3_bucket_public_access_block.s3BucketPublicAccess]
+  depends_on = [aws_s3_bucket_public_access_block.static_site_bucket_public_access]
 }
 
-resource "aws_s3_bucket_website_configuration" "s3BucketWebsiteConfig" {
+resource "aws_s3_bucket_website_configuration" "static_site_bucket_website_config" {
   bucket = var.bucket_name
   index_document {
     suffix = var.index_page
